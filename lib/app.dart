@@ -6,16 +6,19 @@ import 'package:nava_demon_lords_diary/common/widgets/gradient_scaffold.dart';
 import 'package:nava_demon_lords_diary/features/conquests/presentation/conquests_screen.dart';
 import 'package:nava_demon_lords_diary/features/mood/presentation/mood_screen.dart';
 import 'package:nava_demon_lords_diary/features/grimoire/presentation/grimoire_screen.dart';
+import 'package:nava_demon_lords_diary/features/settings/presentation/settings_screen.dart';
+import 'package:nava_demon_lords_diary/features/settings/theme_controller.dart';
 
 class NavaApp extends ConsumerWidget {
   const NavaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeDataProvider);
     final router = _createRouter();
     return MaterialApp.router(
-      title: 'Nava — The Demon Lord\'s Diary',
-      theme: AppTheme.dark,
+      title: 'Nava',
+      theme: theme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
@@ -45,6 +48,11 @@ class NavaApp extends ConsumerWidget {
               path: '/grimoire',
               name: 'grimoire',
               builder: (context, state) => const GrimoireScreen(),
+            ),
+            GoRoute(
+              path: '/settings',
+              name: 'settings',
+              builder: (context, state) => const SettingsScreen(),
             ),
           ],
         ),

@@ -31,45 +31,57 @@ class _MoodScreenState extends ConsumerState<MoodScreen> {
     final latestAsync = ref.watch(latestMoodProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Mana')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedManaOrb(value: _value),
-            const SizedBox(height: 16),
-            Slider(
-              value: _value,
-              onChanged: (v) => setState(() => _value = v),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: noteCtrl,
-                decoration: const InputDecoration(labelText: 'Note'),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedManaOrb(value: _value),
+                    const SizedBox(height: 16),
+                    Slider(
+                      value: _value,
+                      onChanged: (v) => setState(() => _value = v),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextField(
+                        controller: noteCtrl,
+                        decoration: const InputDecoration(labelText: 'Note'),
+                      ),
+                    ),
+                    FilledButton(
+                      onPressed: () async {
+                        final repo = ref.read(moodRepositoryProvider);
+                        await repo.insert(MoodEntry(
+                          value: (_value * 100).round(),
+                          note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
+                          createdAt: DateTime.now(),
+                        ));
+                        ref.invalidate(latestMoodProvider);
+                      },
+                      child: const Text('Channel Mana'),
+                    ),
+                    const SizedBox(height: 24),
+                    latestAsync.when(
+                      data: (m) => m == null
+                          ? const SizedBox.shrink()
+                          : Text('Last: ${m.value}/100'),
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, st) => Text('Error: $e'),
+                    )
+                  ],
+                ),
               ),
             ),
-            FilledButton(
-              onPressed: () async {
-                final repo = ref.read(moodRepositoryProvider);
-                await repo.insert(MoodEntry(
-                  value: (_value * 100).round(),
-                  note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
-                  createdAt: DateTime.now(),
-                ));
-                ref.invalidate(latestMoodProvider);
-              },
-              child: const Text('Channel Mana'),
-            ),
-            const SizedBox(height: 24),
-            latestAsync.when(
-              data: (m) => m == null
-                  ? const SizedBox.shrink()
-                  : Text('Last: ${m.value}/100'),
-              loading: () => const SizedBox.shrink(),
-              error: (e, st) => Text('Error: $e'),
-            )
-          ],
-        ),
+          );
+        },
       ),
     );
   }

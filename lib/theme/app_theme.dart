@@ -11,7 +11,7 @@ class AppColors {
 }
 
 class AppTheme {
-  static ThemeData get dark {
+  static ThemeData abyss() {
     final base = ThemeData.dark(useMaterial3: true);
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.voidBlack,
@@ -49,6 +49,44 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: AppColors.abyss.withOpacity(0.6),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
+  }
+
+  static ThemeData neonArcana() {
+    final base = ThemeData.dark(useMaterial3: true);
+    return base.copyWith(
+      scaffoldBackgroundColor: const Color(0xFF0A0D10),
+      colorScheme: base.colorScheme.copyWith(
+        primary: AppColors.manaTeal,
+        secondary: AppColors.arcaneBlue,
+        surface: const Color(0xFF0E1319),
+        onSurface: Colors.white,
+      ),
+      textTheme: base.textTheme.apply(bodyColor: Colors.white),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF0E1319).withOpacity(0.7),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
+  }
+
+  static ThemeData crimsonEmber() {
+    final base = ThemeData.dark(useMaterial3: true);
+    return base.copyWith(
+      scaffoldBackgroundColor: const Color(0xFF120808),
+      colorScheme: base.colorScheme.copyWith(
+        primary: AppColors.emberOrange,
+        secondary: AppColors.demonPink,
+        surface: const Color(0xFF1A0E0E),
+        onSurface: Colors.white,
+      ),
+      textTheme: base.textTheme.apply(bodyColor: Colors.white),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1A0E0E).withOpacity(0.7),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
