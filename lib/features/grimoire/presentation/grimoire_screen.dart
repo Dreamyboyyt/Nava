@@ -93,7 +93,7 @@ class _CreateEntrySheet extends StatefulWidget {
   const _CreateEntrySheet();
 
   @override
-  State<_CreateEntryDialog> createState() => _CreateEntryDialogState();
+  State<_CreateEntrySheet> createState() => _CreateEntrySheetState();
 }
 
 class _CreateEntrySheetState extends State<_CreateEntrySheet> {
