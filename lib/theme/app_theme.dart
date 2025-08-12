@@ -47,7 +47,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.demonPink, width: 2),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.abyss.withOpacity(0.6),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
