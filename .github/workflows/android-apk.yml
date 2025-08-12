@@ -1,6 +1,10 @@
 name: Android APK (Flutter)
 
 on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
