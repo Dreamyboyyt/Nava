@@ -58,14 +58,28 @@ jobs:
           fi
           if [ -f android/app/src/main/AndroidManifest.xml ]; then
             sed -i 's/android:label="[^"]*"/android:label="Nava"/' android/app/src/main/AndroidManifest.xml
-            # Add permissions if not present
-            grep -q "RECEIVE_BOOT_COMPLETED" android/app/src/main/AndroidManifest.xml || sed -i 's#</application>#<receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:exported="false"/><receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" android:exported="false"/><uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/></application>#' android/app/src/main/AndroidManifest.xml
+            # Add permissions and receivers for notifications and boot reschedule
+            if ! grep -q "RECEIVE_BOOT_COMPLETED" android/app/src/main/AndroidManifest.xml; then
+              sed -i 's#</application>#<receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:exported="false"/><receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" android:exported="false"/></application>#' android/app/src/main/AndroidManifest.xml
+              sed -i 's#</manifest>#<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/></manifest>#' android/app/src/main/AndroidManifest.xml
+            fi
           fi
           # Enforce NDK version
           if [ -f android/app/build.gradle.kts ]; then
             grep -q "ndkVersion" android/app/build.gradle.kts || sed -i 's/android {/android {\n    ndkVersion = "27.0.12077973"/' android/app/build.gradle.kts
           elif [ -f android/app/build.gradle ]; then
             grep -q "ndkVersion" android/app/build.gradle || sed -i "s/android {/android {\n    ndkVersion '27.0.12077973'/" android/app/build.gradle
+          fi
+          # Enable core library desugaring for Java 8+ APIs required by some plugins
+          if [ -f android/app/build.gradle.kts ]; then
+            sed -i 's/compileOptions {/compileOptions {\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle.kts || true
+          elif [ -f android/app/build.gradle ]; then
+            sed -i 's/compileOptions {/compileOptions {\n        coreLibraryDesugaringEnabled true/' android/app/build.gradle || true
+          fi
+          if [ -f android/app/build.gradle.kts ]; then
+            grep -q "desugar_jdk_libs" android/app/build.gradle.kts || sed -i 's/dependencies {/dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")/' android/app/build.gradle.kts
+          elif [ -f android/app/build.gradle ]; then
+            grep -q "desugar_jdk_libs" android/app/build.gradle || sed -i 's/dependencies {/dependencies {\n    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"/' android/app/build.gradle
           fi
       - name: Set NDK version in Gradle
         run: |
