@@ -76,10 +76,17 @@ jobs:
           elif [ -f android/app/build.gradle ]; then
             sed -i 's/compileOptions {/compileOptions {\n        coreLibraryDesugaringEnabled true/' android/app/build.gradle || true
           fi
+          # Ensure the dependency block exists and inject desugar dependency robustly
           if [ -f android/app/build.gradle.kts ]; then
-            grep -q "desugar_jdk_libs" android/app/build.gradle.kts || sed -i 's/dependencies {/dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")/' android/app/build.gradle.kts
+            if ! grep -q "coreLibraryDesugaring\(" android/app/build.gradle.kts; then
+              echo 'appending desugar dep (kts)';
+              printf '\n// injected by CI\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")\n}\n' >> android/app/build.gradle.kts
+            fi
           elif [ -f android/app/build.gradle ]; then
-            grep -q "desugar_jdk_libs" android/app/build.gradle || sed -i 's/dependencies {/dependencies {\n    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"/' android/app/build.gradle
+            if ! grep -q "coreLibraryDesugaring \"com.android.tools:desugar_jdk_libs" android/app/build.gradle; then
+              echo 'appending desugar dep (groovy)';
+              printf '\n// injected by CI\ndependencies {\n    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"\n}\n' >> android/app/build.gradle
+            fi
           fi
       - name: Set NDK version in Gradle
         run: |
